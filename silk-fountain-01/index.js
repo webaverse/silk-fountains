@@ -4,17 +4,20 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import SilkShader from './shaders/SilkShader.js';
 import metaversefile from 'metaversefile';
 //const { useFrame, useLocalPlayer, useCleanup, /*useUi,*/ usePhysics} = metaversefile;
-const { useFrame, useLoaders, usePhysics} = metaversefile;
+const {useApp, useFrame, useLoaders, usePhysics, useCleanup} = metaversefile;
+
+const baseUrl = import.meta.url.replace(/(\/)[^\/\/]*$/, '$1'); 
 
 
 export default () => {  
 
-    const rootScene = new THREE.Object3D();
-    const silkShaderMaterial = createShaderMaterial();
+    const app = useApp();
+    const physics = usePhysics();
+    const physicsIds = [];
     
     const createShaderMaterial = () => {
 
-        let testSilkTexture = new THREE.TextureLoader().load( './textures/silk/silk-contrast-noise.png' );
+        let testSilkTexture = new THREE.TextureLoader().load( baseUrl + "textures/silk/silk-contrast-noise.png" );
         testSilkTexture.wrapS = testSilkTexture.wrapT = THREE.RepeatWrapping;
 
         SilkShader.uniforms.noiseImage.value = testSilkTexture;
@@ -28,24 +31,16 @@ export default () => {
         return silkShaderMat;
     }
 
-    loadModel( { 
-        filePath: './',
-        fileName: 'Silk_Fountain_Dream_1.glb',
-        pos: { x: 0, y: 0, z: 0 },
-    } ).then ( 
-        result => {
-            rootScene.add( result );
-        }
-    )
+    const silkShaderMaterial = createShaderMaterial();
 
     const loadModel = ( params ) => {
 
         return new Promise( ( resolve, reject ) => {
                 
             //const loader = new GLTFLoader();
-            const {gltfLoader} = useLoaders();
-            const dracoLoader = new DRACOLoader();
-            dracoLoader.setDecoderPath( "./draco-decoder/" );
+            const { gltfLoader } = useLoaders();
+            const { dracoLoader } = useLoaders();
+            dracoLoader.setDecoderPath( baseUrl + "draco-decoder/" );
             gltfLoader.setDRACOLoader( dracoLoader );
     
             gltfLoader.load( params.filePath + params.fileName, function( gltf ) {
@@ -53,6 +48,9 @@ export default () => {
                 let numVerts = 0;
     
                 gltf.scene.traverse( function ( child ) {
+
+                    const physicsId = physics.addGeometry( child );
+                    physicsIds.push( physicsId );
     
                     if ( child.isMesh ) {
     
@@ -61,8 +59,8 @@ export default () => {
                         if( child.name == 'Silk-low' ){
                         
                             child.material = silkShaderMaterial;
-                            
                             child.material.side = THREE.FrontSide;
+
                             child.castShadow = true;
                             child.receiveShadow = true;
     
@@ -86,12 +84,27 @@ export default () => {
         })
     }
 
+    loadModel( { 
+        filePath: baseUrl,
+        fileName: 'Silk_Fountain_Dream_1.glb',
+        pos: { x: 0, y: 0, z: 0 },
+    } ).then ( 
+        result => {
+            app.add( result );
+        }
+    )
+
     useFrame(( {timestamp} ) => {
 
         silkShaderMaterial.uniforms.time.value += 0.02;
 
     });
 
-    return rootScene;
-}
+    useCleanup(() => {
+      for (const physicsId of physicsIds) {
+       physics.removeGeometry(physicsId);
+      }
+    });
 
+    return app;
+}
