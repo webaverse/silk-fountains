@@ -94,7 +94,7 @@ export default () => {
         }
     )
 
-    useFrame(( {timestamp} ) => {
+    useFrame(( { timestamp } ) => {
 
         silkShaderMaterial.uniforms.time.value += 0.02;
 
