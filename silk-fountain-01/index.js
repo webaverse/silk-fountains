@@ -1,6 +1,4 @@
 import * as THREE from 'three';
-//import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import SilkShader from './shaders/SilkShader.js';
 import metaversefile from 'metaversefile';
 //const { useFrame, useLocalPlayer, useCleanup, /*useUi,*/ usePhysics} = metaversefile;
