@@ -74,7 +74,7 @@ export default () => {
                     }
                 });
     
-                console.log( `modelLoaded() -> ${ params.fileName } num verts: ` + numVerts );
+                console.log( `Silk Fountain 01 modelLoaded() -> ${ params.fileName } num verts: ` + numVerts );
     
                 gltf.scene.position.set( params.pos.x, params.pos.y, params.pos.z  );
 
