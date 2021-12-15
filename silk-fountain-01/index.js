@@ -15,7 +15,8 @@ export default () => {
     
     const createShaderMaterial = () => {
 
-        let testSilkTexture = new THREE.TextureLoader().load( baseUrl + "textures/silk/silk-contrast-noise.png" );
+        let testSilkTexture = new THREE.TextureLoader().load( baseUrl + "textures/silk/silk-contrast-noise.png",
+        function(){}, undefined, function( err ){ 'Silk Fountain 01 - error loading texture ' + err } );
         testSilkTexture.wrapS = testSilkTexture.wrapT = THREE.RepeatWrapping;
 
         SilkShader.uniforms.noiseImage.value = testSilkTexture;
@@ -93,7 +94,7 @@ export default () => {
     )
 
     useFrame(( { timestamp } ) => {
-
+        console.
         silkShaderMaterial.uniforms.time.value += 0.02;
 
     });
