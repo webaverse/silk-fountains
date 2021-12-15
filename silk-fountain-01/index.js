@@ -38,7 +38,7 @@ export default () => {
             //const loader = new GLTFLoader();
             const { gltfLoader } = useLoaders();
             const { dracoLoader } = useLoaders();
-            dracoLoader.setDecoderPath( baseUrl + "draco-decoder/" );
+            //dracoLoader.setDecoderPath( baseUrl + "draco-decoder/" );
             gltfLoader.setDRACOLoader( dracoLoader );
     
             gltfLoader.load( params.filePath + params.fileName, function( gltf ) {
